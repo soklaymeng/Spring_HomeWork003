@@ -21,7 +21,7 @@ public interface VenuesRepository {
     //get by ID
     @Select("""
          SELECT * FROM venues
-         WHERE venue_id = #{id}
+         WHERE venue_id = #{id};
          """)
     @ResultMap("venueMapping")
     Venues findVenueById(Integer id);
@@ -50,5 +50,6 @@ public interface VenuesRepository {
         """)
     @ResultMap("venueMapping")
     void deleteVenueById(Integer id);
+
 
 }

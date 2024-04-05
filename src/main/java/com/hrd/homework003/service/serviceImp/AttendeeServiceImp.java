@@ -25,14 +25,13 @@ public class AttendeeServiceImp implements AttendeeService {
 
     // Find attendee by ID
     @Override
-    public Attendees findAttendeeById(Integer id) throws NotFoundException {
-        Attendees attendee = attendeeRepository.findAttendeeById(id);
+    public Attendees findAttendeesById(Integer id) throws NotFoundException {
+        Attendees attendee = attendeeRepository.findAttendeesById(id);
         if (attendee == null) {
             throw new NotFoundException("Attendee with ID " + id + " not found");
         }
         return attendee;
     }
-
     // Insert new attendee
     @Override
     public Attendees insertAttendee(AttendeeRequest attendeeRequest) {
@@ -41,7 +40,7 @@ public class AttendeeServiceImp implements AttendeeService {
 
     @Override
     public Attendees updateAttendeeById(Integer id, AttendeeRequest attendeeRequest) throws NotFoundException {
-        if (attendeeRepository.findAttendeeById(id)==null){
+        if (attendeeRepository.findAttendeesById(id)==null){
             throw new NotFoundException("Venue with id " + id + " not found");
         }
         return attendeeRepository.updateAttendeeById(id, attendeeRequest);

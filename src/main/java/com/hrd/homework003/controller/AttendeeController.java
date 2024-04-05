@@ -40,7 +40,7 @@ public class AttendeeController {
     public ResponseEntity<ApiResponse<Attendees>> findAttendeeById(@PathVariable Integer id) {
         Attendees attendee;
         try {
-            attendee = attendeeService.findAttendeeById(id);
+            attendee = attendeeService.findAttendeesById(id);
             ApiResponse<Attendees> response = new ApiResponse<>(
                     "Get attendee successfully",
                     attendee,

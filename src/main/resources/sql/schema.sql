@@ -19,6 +19,17 @@ CREATE TABLE events(
 
 CREATE TABLE event_attendee(
     id SERIAL PRIMARY KEY ,
-    venue_id INT REFERENCES events(venue_id) ON DELETE CASCADE ,
+    event_id INT REFERENCES events(event_id) ON DELETE CASCADE ,
     attendee_id INT REFERENCES attendees(attendee_id) ON DELETE CASCADE
 );
+
+SELECT e.venue_id,e.event_name,e.event_date,e.venue_id
+FROM event_attendee a JOIN events e ON a.event_id= e.event_id
+WHERE attendee_id=1;
+
+SELECT * FROM attendees
+JOIN event_attendee ea on attendees.attendee_id = ea.attendee_id
+WHERE event_id= 1
+
+
+

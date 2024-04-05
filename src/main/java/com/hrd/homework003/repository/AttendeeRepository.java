@@ -1,6 +1,7 @@
 package com.hrd.homework003.repository;
 
 import com.hrd.homework003.model.Attendees;
+import com.hrd.homework003.model.Events;
 import com.hrd.homework003.model.dto.request.AttendeeRequest;
 import org.apache.ibatis.annotations.*;
 
@@ -14,15 +15,15 @@ public interface AttendeeRepository {
     @Results(id = "attendeeMapping", value = {
             @Result(property = "attendeeName", column = "attendee_name"),
             @Result(property = "attendeeId", column = "attendee_id"),
-            @Result(property = "email", column = "email")
+            @Result(property = "email", column = "email"),
+
     })
     List<Attendees> getAllAttendees();
-
     @Select("""
-        SELECT * FROM attendees WHERE attendee_id = #{id}
+        SELECT * FROM attendees WHERE attendee_id = #{id};
         """)
     @ResultMap("attendeeMapping")
-    Attendees findAttendeeById(@Param("id") Integer id);
+    Attendees findAttendeesById(Integer id);
 
     @Select("""
         INSERT INTO attendees (attendee_name, email)
@@ -39,7 +40,6 @@ public interface AttendeeRepository {
     """)
     @ResultMap("attendeeMapping")
     Attendees updateAttendeeById(@Param("id") Integer id, @Param("attendee") AttendeeRequest attendeeRequest);
-    //delete
     //Delete
     @Select("""
         DELETE FROM attendees
@@ -47,4 +47,12 @@ public interface AttendeeRepository {
         """)
     @ResultMap("attendeeMapping")
     void deleteAttendeeById(Integer id);
+
+    @Select("""
+        SELECT * FROM attendees
+        JOIN event_attendee ea on attendees.attendee_id = ea.attendee_id
+        WHERE event_id= #{id}
+        """)
+    @ResultMap("attendeeMapping")
+    List<Attendees> getEventByAttendeeId(Integer id);
 }

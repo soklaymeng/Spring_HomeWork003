@@ -10,8 +10,7 @@ public interface AttendeeService {
 
     List<Attendees> getAllAttendees();
 
-    Attendees findAttendeeById(Integer id) throws NotFoundException;
-
+    Attendees findAttendeesById(Integer id) throws NotFoundException;
 
     Attendees insertAttendee(AttendeeRequest attendeeRequest);
 
