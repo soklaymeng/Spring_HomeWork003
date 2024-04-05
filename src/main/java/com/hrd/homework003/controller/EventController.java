@@ -3,13 +3,11 @@ package com.hrd.homework003.controller;
 import com.hrd.homework003.model.Events;
 import com.hrd.homework003.model.dto.ApiResponse;
 import com.hrd.homework003.service.EventService;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,5 +29,31 @@ public class EventController {
                 200,
                 LocalDateTime.now()
         ));
+    }
+    //Get By ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<Events>> getAllEventById(@PathVariable Integer id){
+        Events events;
+       try{
+           events= eventService.getAllEventById(id);
+           ApiResponse<Events> response= new ApiResponse<>(
+                   "Get events by Id successully",
+                   events,
+                   HttpStatus.OK,
+                   HttpStatus.OK.value(),
+                   LocalDateTime.now()
+           );
+           return ResponseEntity.ok(response);
+       } catch (NotFoundException e) {
+           ApiResponse<Events> response= new ApiResponse<>(
+                   "Get events by Id successfully",
+                   null,
+                   HttpStatus.NOT_FOUND,
+                   HttpStatus.NOT_FOUND.value(),
+                   LocalDateTime.now()
+           );
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+       }
+
     }
 }

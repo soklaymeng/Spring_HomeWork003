@@ -24,6 +24,13 @@ public interface EventsRepository {
 
     })
     List<Events> getAllEvent();
+   //get by id
+   @Select("""
+    SELECT * FROM events
+    WHERE event_id = #{id}
+    """)
+   @ResultMap("eventMapping")
+    Events getAllEventById(Integer id);
 
 //    @Result(property = "attendeeName", column = "attendee_name"),
 //    @Result(property = "attendeeId", column = "attendee_id"),
