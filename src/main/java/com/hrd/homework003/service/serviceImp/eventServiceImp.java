@@ -1,6 +1,7 @@
 package com.hrd.homework003.service.serviceImp;
 
 import com.hrd.homework003.model.Events;
+import com.hrd.homework003.model.dto.request.EventRequest;
 import com.hrd.homework003.repository.EventsRepository;
 import com.hrd.homework003.service.EventService;
 import org.apache.ibatis.javassist.NotFoundException;
@@ -28,6 +29,15 @@ public class eventServiceImp implements EventService {
             throw new NotFoundException("Attendee with ID " + id + " not found");
         }
         return events;
+    }
+
+    @Override
+    public Events InsertEvents(EventRequest eventRequest) {
+        Integer eventId = eventsRepository.InsertEvents(eventRequest);
+        for (Integer attendeeId : eventRequest.getAttendeeId()) {
+            eventsRepository.insertIntoEventAttendee(eventId, attendeeId);
+        }
+        return eventsRepository.findEventById(eventId);
     }
 
 

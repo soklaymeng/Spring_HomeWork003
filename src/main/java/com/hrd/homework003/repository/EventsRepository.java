@@ -2,6 +2,7 @@ package com.hrd.homework003.repository;
 
 import com.hrd.homework003.model.Events;
 import com.hrd.homework003.model.Venues;
+import com.hrd.homework003.model.dto.request.EventRequest;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Service;
 
@@ -31,17 +32,25 @@ public interface EventsRepository {
     """)
    @ResultMap("eventMapping")
     Events getAllEventById(Integer id);
+   // Insert event with venueId and attendeeId(list)
+    @Select("""
+            INSERT INTO events (event_name, event_date, venue_id)
+            VALUES (#{venues.eventName}, #{venues.eventDate}, #{venues.venueId})
+            Returning event_id
+    """)
+    Integer InsertEvents(@Param("venues") EventRequest eventRequest);
+    //Insert In to Event_Attendee table
+    @Insert("""
+        INSERT INTO event_attendee
+        VALUES (#{eventId},#{attendeeId})
+        """)
+    void insertIntoEventAttendee(Integer eventId, Integer attendeeId);
 
-//    @Result(property = "attendeeName", column = "attendee_name"),
-//    @Result(property = "attendeeId", column = "attendee_id"),
-//    @Result(property = "email", column = "email"),
-//    @Result(property = "eventsList",column = "attendee_id",
-//    @Select("""
-//    SELECT e.venue_id,e.event_name,e.event_date,e.venue_id
-//    FROM event_attendee a JOIN events e ON a.event_id= e.event_id
-//    WHERE attendee_id=#{id};
-//    """)
-//    @ResultMap("eventMapping")
-//    List<Events> getEventByVenueId(Integer id);
+    @Select("""
+    SELECT * FROM events
+    WHERE event_id = #{eventId}
+""")
+    @ResultMap("eventMapping")
+    Events findEventById(Integer eventId);
 
 }

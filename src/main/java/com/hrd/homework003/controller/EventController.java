@@ -2,6 +2,7 @@ package com.hrd.homework003.controller;
 
 import com.hrd.homework003.model.Events;
 import com.hrd.homework003.model.dto.ApiResponse;
+import com.hrd.homework003.model.dto.request.EventRequest;
 import com.hrd.homework003.service.EventService;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -55,5 +56,18 @@ public class EventController {
            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
        }
 
+    }
+    //Insert
+    @PostMapping
+    public ResponseEntity<?>InsertEvents(@RequestBody EventRequest eventRequest){
+       // Events eventsList= eventService.InsertEvents(eventRequest);
+        Events eventsList= eventService.InsertEvents(eventRequest);
+        return ResponseEntity.ok(new ApiResponse<>(
+                "Insert successfully",
+                eventsList,
+                HttpStatus.CREATED,
+                201,
+                LocalDateTime.now()
+        ));
     }
 }
