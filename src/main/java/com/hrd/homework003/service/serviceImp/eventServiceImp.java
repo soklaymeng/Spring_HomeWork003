@@ -33,11 +33,14 @@ public class eventServiceImp implements EventService {
 
     @Override
     public Events InsertEvents(EventRequest eventRequest) {
-        Integer eventId = eventsRepository.InsertEvents(eventRequest);
+
+        Events eventId = eventsRepository.InsertEvents(eventRequest);
         for (Integer attendeeId : eventRequest.getAttendeeId()) {
-            eventsRepository.insertIntoEventAttendee(eventId, attendeeId);
+            System.out.println(" show attendeeiD"+attendeeId);
+            eventsRepository.insertIntoEventAttendee(eventId.getEventId(), attendeeId);
+
         }
-        return eventsRepository.findEventById(eventId);
+        return eventsRepository.findEventById(eventId.getEventId());
     }
 
 

@@ -38,12 +38,14 @@ public interface EventsRepository {
             VALUES (#{venues.eventName}, #{venues.eventDate}, #{venues.venueId})
             Returning event_id
     """)
-    Integer InsertEvents(@Param("venues") EventRequest eventRequest);
+    @ResultMap("eventMapping")
+    Events InsertEvents(@Param("venues") EventRequest eventRequest);
     //Insert In to Event_Attendee table
     @Insert("""
-        INSERT INTO event_attendee
+        INSERT INTO event_attendee(event_id,attendee_id)
         VALUES (#{eventId},#{attendeeId})
         """)
+    @ResultMap("eventMapping")
     void insertIntoEventAttendee(Integer eventId, Integer attendeeId);
 
     @Select("""
@@ -52,5 +54,8 @@ public interface EventsRepository {
 """)
     @ResultMap("eventMapping")
     Events findEventById(Integer eventId);
+
+
+
 
 }
