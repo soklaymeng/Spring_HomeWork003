@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface AttendeeService {
 
-    List<Attendees> getAllAttendees();
+    List<Attendees> getAllAttendees(Integer page, Integer size);
 
     Attendees findAttendeesById(Integer id) throws NotFoundException;
 

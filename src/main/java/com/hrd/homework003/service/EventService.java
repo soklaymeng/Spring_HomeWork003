@@ -8,11 +8,15 @@ import org.apache.ibatis.javassist.NotFoundException;
 import java.util.List;
 
 public interface EventService {
-    List<Events> getAllEvents();
+    List<Events> getAllEvents(Integer page, Integer size);
 
 
     Events getAllEventById(Integer id) throws NotFoundException;
 
 
     Events InsertEvents(EventRequest eventRequest);
+
+    Events updateEventById(Integer id, EventRequest eventRequest);
+
+    Events deleteEventById(Integer id) throws NotFoundException;
 }

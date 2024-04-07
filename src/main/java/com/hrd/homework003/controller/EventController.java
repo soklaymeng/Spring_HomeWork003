@@ -21,8 +21,8 @@ public class EventController {
         this.eventService = eventService;
     }
     @GetMapping
-    public ResponseEntity<?> getAllEvents(){
-        List<Events> eventsList= eventService.getAllEvents();
+    public ResponseEntity<?> getAllEvents(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "2") Integer size){
+        List<Events> eventsList= eventService.getAllEvents(page,size);
         return ResponseEntity.ok(new ApiResponse<>(
                 "Get all events ",
                 eventsList,
@@ -38,7 +38,7 @@ public class EventController {
        try{
            events= eventService.getAllEventById(id);
            ApiResponse<Events> response= new ApiResponse<>(
-                   "Get events by Id successully",
+                   "Get events by Id successfully",
                    events,
                    HttpStatus.OK,
                    HttpStatus.OK.value(),
@@ -60,7 +60,6 @@ public class EventController {
     //Insert
     @PostMapping
     public ResponseEntity<?>InsertEvents(@RequestBody EventRequest eventRequest){
-       // Events eventsList= eventService.InsertEvents(eventRequest);
         Events eventsList= eventService.InsertEvents(eventRequest);
         return ResponseEntity.ok(new ApiResponse<>(
                 "Insert successfully",
@@ -70,4 +69,45 @@ public class EventController {
                 LocalDateTime.now()
         ));
     }
+    //Update
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateEventById(@PathVariable Integer id,
+                                             @RequestBody EventRequest eventRequest){
+        Events events= eventService.updateEventById(id,eventRequest);
+        ApiResponse<Events> eventsApiResponse= new ApiResponse<>(
+                "Successfully to update new event",
+                events,
+                HttpStatus.OK,
+                200,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.ok(eventsApiResponse);
+
+    }
+    //Delete
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteEventById(@PathVariable Integer id) throws NotFoundException {
+        try {
+            Events events = eventService.deleteEventById(id);
+            ApiResponse<Events> eventsApiResponse = new ApiResponse<>(
+                    "Delete successfully!!!",
+                    events,
+                    HttpStatus.OK,
+                    200,
+                    LocalDateTime.now()
+            );
+            return ResponseEntity.ok(eventsApiResponse);
+        } catch (NotFoundException e) {
+            ApiResponse<Events> eventsApiResponse = new ApiResponse<>(
+                    "Delete successfully!!!",
+                    null,
+                    HttpStatus.NOT_FOUND,
+                    HttpStatus.NOT_FOUND.value(),
+                    LocalDateTime.now()
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(eventsApiResponse);
+        }
+    }
+
+
 }

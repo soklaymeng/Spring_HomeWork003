@@ -23,8 +23,8 @@ public class AttendeeController {
 
     // Get all attendees
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Attendees>>> findAllAttendees() {
-        List<Attendees> attendeesList = attendeeService.getAllAttendees();
+    public ResponseEntity<ApiResponse<List<Attendees>>> findAllAttendees(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "2") Integer size) {
+        List<Attendees> attendeesList = attendeeService.getAllAttendees(page,size);
         ApiResponse<List<Attendees>> response = new ApiResponse<>(
                 "Get all attendees successfully",
                 attendeesList,

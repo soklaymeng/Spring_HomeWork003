@@ -11,8 +11,10 @@ import java.util.List;
 @Mapper
 public interface EventsRepository {
     @Select("""
-        SELECT *FROM events;
-        """)
+           SELECT * FROM events
+       LIMIT #{size}
+       OFFSET #{size} * (#{page} - 1)
+       """)
     @Results(id = "eventMapping",value = {
             @Result(property = "eventId",column = "event_id"),
             @Result(property = "evenName", column = "event_name"),
@@ -24,7 +26,7 @@ public interface EventsRepository {
             many = @Many(select = "com.hrd.homework003.repository.AttendeeRepository.getEventByAttendeeId"))
 
     })
-    List<Events> getAllEvent();
+    List<Events> getAllEvent(Integer page, Integer size);
    //get by id
    @Select("""
     SELECT * FROM events
@@ -51,11 +53,23 @@ public interface EventsRepository {
     @Select("""
     SELECT * FROM events
     WHERE event_id = #{eventId}
-""")
+    """)
     @ResultMap("eventMapping")
     Events findEventById(Integer eventId);
 
+    //Update
+    @Select("""
+    UPDATE events
+    SET event_name = #{event.eventName},event_date = #{event.eventDate},venue_id = #{event.venueId}
+    WHERE event_id = #{id} RETURNING *
+    """)
+    @ResultMap("eventMapping")
+    Events updateEventById(Integer id,@Param("event") EventRequest eventRequest) ;
 
-
-
+    //Delete
+    @Select("""
+    DELETE FROM events
+    WHERE event_id= #{id}
+    """)
+    Events deleteEventById(Integer id);
 }

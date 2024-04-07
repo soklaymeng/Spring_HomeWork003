@@ -10,7 +10,10 @@ import java.util.List;
 @Mapper
 public interface AttendeeRepository {
     @Select("""
-    SELECT * FROM attendees
+       SELECT * FROM attendees
+           LIMIT #{size}
+           OFFSET #{size} * (#{page} - 1)
+           
     """)
     @Results(id = "attendeeMapping", value = {
             @Result(property = "attendeeName", column = "attendee_name"),
@@ -18,7 +21,7 @@ public interface AttendeeRepository {
             @Result(property = "email", column = "email"),
 
     })
-    List<Attendees> getAllAttendees();
+    List<Attendees> getAllAttendees(Integer page, Integer size);
     @Select("""
         SELECT * FROM attendees WHERE attendee_id = #{id};
         """)

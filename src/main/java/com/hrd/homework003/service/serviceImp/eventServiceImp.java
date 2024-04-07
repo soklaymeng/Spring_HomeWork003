@@ -18,8 +18,9 @@ public class eventServiceImp implements EventService {
     }
 
     @Override
-    public List<Events> getAllEvents() {
-        return eventsRepository.getAllEvent();
+    public List<Events> getAllEvents(Integer page, Integer size) {
+
+        return eventsRepository.getAllEvent(page,size);
     }
 
     @Override
@@ -41,6 +42,19 @@ public class eventServiceImp implements EventService {
 
         }
         return eventsRepository.findEventById(eventId.getEventId());
+    }
+
+    @Override
+    public Events updateEventById(Integer id, EventRequest eventRequest) {
+        return eventsRepository.updateEventById(id,eventRequest);
+    }
+
+    @Override
+    public Events deleteEventById(Integer id) throws NotFoundException {
+        if (eventsRepository.findEventById(id)==null){
+            throw new NotFoundException("Event with ID " + id + " not found");
+        }
+        return eventsRepository.deleteEventById(id);
     }
 
 

@@ -19,8 +19,8 @@ public class AttendeeServiceImp implements AttendeeService {
 
     // Find all attendees
     @Override
-    public List<Attendees> getAllAttendees() {
-        return attendeeRepository.getAllAttendees();
+    public List<Attendees> getAllAttendees(Integer page, Integer size) {
+        return attendeeRepository.getAllAttendees(page, size);
     }
 
     // Find attendee by ID

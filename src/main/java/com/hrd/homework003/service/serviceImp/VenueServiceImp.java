@@ -21,6 +21,7 @@ public class VenueServiceImp implements VenueService {
 
     @Override
     public List<Venues> getAllVenues(Integer page, Integer size) {
+
         return venuesRepository.getAllVenues(page,size);
     }
         //find by id

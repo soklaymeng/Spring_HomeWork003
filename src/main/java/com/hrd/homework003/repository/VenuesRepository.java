@@ -9,8 +9,10 @@ import java.util.List;
 @Mapper
 public interface VenuesRepository {
     @Select("""
-       SELECT * FROM venues;
-        """)
+              SELECT * FROM venues
+       LIMIT #{size}
+       OFFSET #{size} * (#{page} - 1)
+       """)
     @Results (id = "venueMapping", value = {
             @Result(property = "venueName",column = "venue_name"),
             @Result(property = "venueId", column = "venue_id"),
