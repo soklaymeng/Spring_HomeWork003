@@ -4,6 +4,7 @@ import com.hrd.homework003.model.Attendees;
 import com.hrd.homework003.model.dto.ApiResponse;
 import com.hrd.homework003.model.dto.request.AttendeeRequest;
 import com.hrd.homework003.service.AttendeeService;
+import jakarta.validation.Valid;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,9 +39,7 @@ public class AttendeeController {
     // Get attendee by ID
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Attendees>> findAttendeeById(@PathVariable Integer id) {
-        Attendees attendee;
-        try {
-            attendee = attendeeService.findAttendeesById(id);
+         Attendees   attendee = attendeeService.findAttendeesById(id);
             ApiResponse<Attendees> response = new ApiResponse<>(
                     "Get attendee successfully",
                     attendee,
@@ -49,21 +48,14 @@ public class AttendeeController {
                     LocalDateTime.now()
             );
             return ResponseEntity.ok(response);
-        } catch (NotFoundException e) {
-            ApiResponse<Attendees> response = new ApiResponse<>(
-                    "Attendee not found",
-                    null,
-                    HttpStatus.NOT_FOUND,
-                    HttpStatus.NOT_FOUND.value(),
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+
+
     }
 
     // Insert new attendee
     @PostMapping
-    public ResponseEntity<ApiResponse<Attendees>> insertAttendee(@RequestBody AttendeeRequest attendeeRequest) {
+    public ResponseEntity<ApiResponse<Attendees>> insertAttendee(@Valid
+            @RequestBody AttendeeRequest attendeeRequest) {
         Attendees attendee = attendeeService.insertAttendee(attendeeRequest);
         ApiResponse<Attendees> response = new ApiResponse<>(
                 "Successfully inserted new attendee",
@@ -76,7 +68,7 @@ public class AttendeeController {
     }
     //update
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAttendeeById(@PathVariable Integer id, @RequestBody AttendeeRequest attendeeRequest) throws NotFoundException {
+    public ResponseEntity<?> updateAttendeeById(@PathVariable Integer id, @RequestBody AttendeeRequest attendeeRequest)  {
         Attendees updatedAttendee = attendeeService.updateAttendeeById(id, attendeeRequest);
         ApiResponse<Attendees> attendeesApiResponse = new ApiResponse<>(
                 "Venue updated successfully",
@@ -90,7 +82,7 @@ public class AttendeeController {
     //Delete
     //Delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAttendeeById(@PathVariable Integer id) throws NotFoundException {
+    public ResponseEntity<?> deleteAttendeeById(@PathVariable Integer id) {
         attendeeService.deleteAttendeeById(id);
         return ResponseEntity.ok(new ResponseEntity<>(
                 "Successfully",

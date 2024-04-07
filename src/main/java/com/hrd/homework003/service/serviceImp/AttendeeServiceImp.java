@@ -1,5 +1,6 @@
 package com.hrd.homework003.service.serviceImp;
 
+import com.hrd.homework003.exception.VenueNotFoundException;
 import com.hrd.homework003.model.Attendees;
 import com.hrd.homework003.model.dto.request.AttendeeRequest;
 import com.hrd.homework003.repository.AttendeeRepository;
@@ -25,10 +26,10 @@ public class AttendeeServiceImp implements AttendeeService {
 
     // Find attendee by ID
     @Override
-    public Attendees findAttendeesById(Integer id) throws NotFoundException {
+    public Attendees findAttendeesById(Integer id) {
         Attendees attendee = attendeeRepository.findAttendeesById(id);
         if (attendee == null) {
-            throw new NotFoundException("Attendee with ID " + id + " not found");
+            throw new VenueNotFoundException("Attendee with ID " + id + " not found");
         }
         return attendee;
     }
@@ -39,15 +40,18 @@ public class AttendeeServiceImp implements AttendeeService {
     }
 
     @Override
-    public Attendees updateAttendeeById(Integer id, AttendeeRequest attendeeRequest) throws NotFoundException {
+    public Attendees updateAttendeeById(Integer id, AttendeeRequest attendeeRequest) {
         if (attendeeRepository.findAttendeesById(id)==null){
-            throw new NotFoundException("Venue with id " + id + " not found");
+            throw new VenueNotFoundException("Could not be update with id " + id + " , because it doesn't exist");
         }
         return attendeeRepository.updateAttendeeById(id, attendeeRequest);
     }
 
     @Override
     public void deleteAttendeeById(Integer id) {
+        if (attendeeRepository.findAttendeesById(id)==null){
+            throw new VenueNotFoundException("Could not delete attendee with id " +id+ "  , because it doesn't exist");
+        }
         attendeeRepository.deleteAttendeeById(id);
     }
 }

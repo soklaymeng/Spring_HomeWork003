@@ -10,11 +10,11 @@ public interface AttendeeService {
 
     List<Attendees> getAllAttendees(Integer page, Integer size);
 
-    Attendees findAttendeesById(Integer id) throws NotFoundException;
+    Attendees findAttendeesById(Integer id) ;
 
     Attendees insertAttendee(AttendeeRequest attendeeRequest);
 
-    Attendees updateAttendeeById(Integer id, AttendeeRequest attendeeRequest) throws NotFoundException;
+    Attendees updateAttendeeById(Integer id, AttendeeRequest attendeeRequest);
 
     void deleteAttendeeById(Integer id);
 }

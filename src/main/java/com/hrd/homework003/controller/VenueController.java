@@ -23,7 +23,7 @@ public class VenueController {
         this.venueService = venueService;
     }
     @GetMapping
-    public ResponseEntity<?> getAllVenues(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "2")Integer size) {
+    public ResponseEntity<?> getAllVenues(@Positive @RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "2")Integer size) {
         List<Venues> venuesList = venueService.getAllVenues(page, size);
        return ResponseEntity.ok(new ApiResponse<>(
                 "Successfully",
@@ -35,7 +35,7 @@ public class VenueController {
     }
     //Get Venues by ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> findVenueById(@Positive @PathVariable Integer id ) {
+    public ResponseEntity<?> findVenueById(@Valid @Positive @PathVariable Integer id ) {
         Venues venues= venueService.findVenueById(id);
         ApiResponse<Venues> venuesApiResponse= new ApiResponse<>(
                 "successfully",

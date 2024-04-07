@@ -1,5 +1,6 @@
 package com.hrd.homework003.service.serviceImp;
 
+import com.hrd.homework003.exception.VenueNotFoundException;
 import com.hrd.homework003.model.Events;
 import com.hrd.homework003.model.dto.request.EventRequest;
 import com.hrd.homework003.repository.EventsRepository;
@@ -24,10 +25,10 @@ public class eventServiceImp implements EventService {
     }
 
     @Override
-    public Events getAllEventById(Integer id) throws NotFoundException {
+    public Events getAllEventById(Integer id) {
         Events events= eventsRepository.getAllEventById(id);
         if (events==null){
-            throw new NotFoundException("Attendee with ID " + id + " not found");
+            throw new VenueNotFoundException("Attendee with ID " + id + " not found");
         }
         return events;
     }
@@ -37,7 +38,6 @@ public class eventServiceImp implements EventService {
 
         Events eventId = eventsRepository.InsertEvents(eventRequest);
         for (Integer attendeeId : eventRequest.getAttendeeId()) {
-            System.out.println(" show attendeeiD"+attendeeId);
             eventsRepository.insertIntoEventAttendee(eventId.getEventId(), attendeeId);
 
         }
@@ -46,13 +46,15 @@ public class eventServiceImp implements EventService {
 
     @Override
     public Events updateEventById(Integer id, EventRequest eventRequest) {
+        if (eventsRepository.findEventById(id)==null){
+            throw new VenueNotFoundException("Could not be update with id " + id + " ,because it doesn't exist");
+        }
         return eventsRepository.updateEventById(id,eventRequest);
     }
-
     @Override
-    public Events deleteEventById(Integer id) throws NotFoundException {
+    public Events deleteEventById(Integer id)  {
         if (eventsRepository.findEventById(id)==null){
-            throw new NotFoundException("Event with ID " + id + " not found");
+            throw new VenueNotFoundException("Could not be delete with id  " + id + "  ,because it doesn't exist");
         }
         return eventsRepository.deleteEventById(id);
     }

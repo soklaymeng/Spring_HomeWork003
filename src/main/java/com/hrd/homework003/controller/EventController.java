@@ -4,6 +4,7 @@ import com.hrd.homework003.model.Events;
 import com.hrd.homework003.model.dto.ApiResponse;
 import com.hrd.homework003.model.dto.request.EventRequest;
 import com.hrd.homework003.service.EventService;
+import jakarta.validation.Valid;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class EventController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Events>> getAllEventById(@PathVariable Integer id){
         Events events;
-       try{
+
            events= eventService.getAllEventById(id);
            ApiResponse<Events> response= new ApiResponse<>(
                    "Get events by Id successfully",
@@ -45,21 +46,12 @@ public class EventController {
                    LocalDateTime.now()
            );
            return ResponseEntity.ok(response);
-       } catch (NotFoundException e) {
-           ApiResponse<Events> response= new ApiResponse<>(
-                   "Get events by Id successfully",
-                   null,
-                   HttpStatus.NOT_FOUND,
-                   HttpStatus.NOT_FOUND.value(),
-                   LocalDateTime.now()
-           );
-           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-       }
+
 
     }
     //Insert
     @PostMapping
-    public ResponseEntity<?>InsertEvents(@RequestBody EventRequest eventRequest){
+    public ResponseEntity<?>InsertEvents(@Valid @RequestBody EventRequest eventRequest){
         Events eventsList= eventService.InsertEvents(eventRequest);
         return ResponseEntity.ok(new ApiResponse<>(
                 "Insert successfully",
@@ -86,8 +78,7 @@ public class EventController {
     }
     //Delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEventById(@PathVariable Integer id) throws NotFoundException {
-        try {
+    public ResponseEntity<?> deleteEventById(@PathVariable Integer id)  {
             Events events = eventService.deleteEventById(id);
             ApiResponse<Events> eventsApiResponse = new ApiResponse<>(
                     "Delete successfully!!!",
@@ -97,16 +88,6 @@ public class EventController {
                     LocalDateTime.now()
             );
             return ResponseEntity.ok(eventsApiResponse);
-        } catch (NotFoundException e) {
-            ApiResponse<Events> eventsApiResponse = new ApiResponse<>(
-                    "Delete successfully!!!",
-                    null,
-                    HttpStatus.NOT_FOUND,
-                    HttpStatus.NOT_FOUND.value(),
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(eventsApiResponse);
-        }
     }
 
 
