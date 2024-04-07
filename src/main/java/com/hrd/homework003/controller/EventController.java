@@ -65,7 +65,7 @@ public class EventController {
     //Update
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEventById(@Positive @PathVariable Integer id,
-                                             @RequestBody EventRequest eventRequest){
+                                             @Valid @RequestBody EventRequest eventRequest){
         Events events= eventService.updateEventById(id,eventRequest);
         ApiResponse<Events> eventsApiResponse= new ApiResponse<>(
                 "Successfully to update new event",

@@ -69,7 +69,7 @@ public class AttendeeController {
     }
     //update
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAttendeeById(@Positive @PathVariable Integer id, @RequestBody AttendeeRequest attendeeRequest)  {
+    public ResponseEntity<?> updateAttendeeById(@Positive @PathVariable Integer id,@Valid @RequestBody AttendeeRequest attendeeRequest)  {
         Attendees updatedAttendee = attendeeService.updateAttendeeById(id, attendeeRequest);
         ApiResponse<Attendees> attendeesApiResponse = new ApiResponse<>(
                 "Venue updated successfully",

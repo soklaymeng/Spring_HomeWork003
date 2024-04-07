@@ -63,7 +63,7 @@ public class VenueController {
     }
     // Update
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateVenueById(@Positive @PathVariable Integer id, @RequestBody VenuesRequest venuesRequest)  {
+    public ResponseEntity<?> updateVenueById( @Positive @PathVariable Integer id,@Valid @RequestBody VenuesRequest venuesRequest)  {
         Venues updatedVenue = venueService.updateVenueById(id, venuesRequest);
         ApiResponse<Venues> response = new ApiResponse<>(
                 "Venue updated successfully",
