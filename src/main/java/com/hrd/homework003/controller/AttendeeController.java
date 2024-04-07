@@ -5,6 +5,7 @@ import com.hrd.homework003.model.dto.ApiResponse;
 import com.hrd.homework003.model.dto.request.AttendeeRequest;
 import com.hrd.homework003.service.AttendeeService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class AttendeeController {
 
     // Get all attendees
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Attendees>>> findAllAttendees(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "2") Integer size) {
+    public ResponseEntity<ApiResponse<List<Attendees>>> findAllAttendees(@Positive @RequestParam(defaultValue = "1") Integer page,@Positive @RequestParam(defaultValue = "2") Integer size) {
         List<Attendees> attendeesList = attendeeService.getAllAttendees(page,size);
         ApiResponse<List<Attendees>> response = new ApiResponse<>(
                 "Get all attendees successfully",
@@ -38,7 +39,7 @@ public class AttendeeController {
 
     // Get attendee by ID
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Attendees>> findAttendeeById(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<Attendees>> findAttendeeById(@Positive @PathVariable Integer id) {
          Attendees   attendee = attendeeService.findAttendeesById(id);
             ApiResponse<Attendees> response = new ApiResponse<>(
                     "Get attendee successfully",
@@ -68,7 +69,7 @@ public class AttendeeController {
     }
     //update
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAttendeeById(@PathVariable Integer id, @RequestBody AttendeeRequest attendeeRequest)  {
+    public ResponseEntity<?> updateAttendeeById(@Positive @PathVariable Integer id, @RequestBody AttendeeRequest attendeeRequest)  {
         Attendees updatedAttendee = attendeeService.updateAttendeeById(id, attendeeRequest);
         ApiResponse<Attendees> attendeesApiResponse = new ApiResponse<>(
                 "Venue updated successfully",
@@ -79,10 +80,10 @@ public class AttendeeController {
         );
         return ResponseEntity.ok(attendeesApiResponse);
     }
-    //Delete
+
     //Delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAttendeeById(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteAttendeeById(@Positive @PathVariable Integer id) {
         attendeeService.deleteAttendeeById(id);
         return ResponseEntity.ok(new ResponseEntity<>(
                 "Successfully",

@@ -5,6 +5,7 @@ import com.hrd.homework003.model.dto.ApiResponse;
 import com.hrd.homework003.model.dto.request.EventRequest;
 import com.hrd.homework003.service.EventService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class EventController {
         this.eventService = eventService;
     }
     @GetMapping
-    public ResponseEntity<?> getAllEvents(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "2") Integer size){
+    public ResponseEntity<?> getAllEvents(@Positive @RequestParam(defaultValue = "1") Integer page,@Positive @RequestParam(defaultValue = "2") Integer size){
         List<Events> eventsList= eventService.getAllEvents(page,size);
         return ResponseEntity.ok(new ApiResponse<>(
                 "Get all events ",
@@ -34,7 +35,7 @@ public class EventController {
     }
     //Get By ID
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Events>> getAllEventById(@PathVariable Integer id){
+    public ResponseEntity<ApiResponse<Events>> getAllEventById(@Positive @PathVariable Integer id){
         Events events;
 
            events= eventService.getAllEventById(id);
@@ -63,7 +64,7 @@ public class EventController {
     }
     //Update
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEventById(@PathVariable Integer id,
+    public ResponseEntity<?> updateEventById(@Positive @PathVariable Integer id,
                                              @RequestBody EventRequest eventRequest){
         Events events= eventService.updateEventById(id,eventRequest);
         ApiResponse<Events> eventsApiResponse= new ApiResponse<>(
@@ -78,7 +79,7 @@ public class EventController {
     }
     //Delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEventById(@PathVariable Integer id)  {
+    public ResponseEntity<?> deleteEventById(@Positive @PathVariable Integer id)  {
             Events events = eventService.deleteEventById(id);
             ApiResponse<Events> eventsApiResponse = new ApiResponse<>(
                     "Delete successfully!!!",

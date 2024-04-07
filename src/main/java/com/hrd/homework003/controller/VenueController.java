@@ -23,7 +23,7 @@ public class VenueController {
         this.venueService = venueService;
     }
     @GetMapping
-    public ResponseEntity<?> getAllVenues(@Positive @RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "2")Integer size) {
+    public ResponseEntity<?> getAllVenues(@Positive @RequestParam(defaultValue = "1") Integer page,@Positive @RequestParam(defaultValue = "2")Integer size) {
         List<Venues> venuesList = venueService.getAllVenues(page, size);
        return ResponseEntity.ok(new ApiResponse<>(
                 "Successfully",
@@ -63,7 +63,7 @@ public class VenueController {
     }
     // Update
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateVenueById(@PathVariable Integer id, @RequestBody VenuesRequest venuesRequest)  {
+    public ResponseEntity<?> updateVenueById(@Positive @PathVariable Integer id, @RequestBody VenuesRequest venuesRequest)  {
         Venues updatedVenue = venueService.updateVenueById(id, venuesRequest);
         ApiResponse<Venues> response = new ApiResponse<>(
                 "Venue updated successfully",
@@ -77,7 +77,7 @@ public class VenueController {
 
     //Delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteVenueById(@PathVariable Integer id)  {
+    public ResponseEntity<?> deleteVenueById(@Positive @PathVariable Integer id)  {
         venueService.deleteVenueById(id);
         return ResponseEntity.ok(new ResponseEntity<>(
                 "Successfully",
