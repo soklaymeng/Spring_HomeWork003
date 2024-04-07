@@ -4,6 +4,8 @@ import com.hrd.homework003.model.dto.ApiResponse;
 import com.hrd.homework003.model.Venues;
 import com.hrd.homework003.model.dto.request.VenuesRequest;
 import com.hrd.homework003.service.VenueService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
@@ -33,7 +35,7 @@ public class VenueController {
     }
     //Get Venues by ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> findVenueById(@PathVariable Integer id ) throws NotFoundException {
+    public ResponseEntity<?> findVenueById(@Positive @PathVariable Integer id ) {
         Venues venues= venueService.findVenueById(id);
         ApiResponse<Venues> venuesApiResponse= new ApiResponse<>(
                 "successfully",
@@ -47,7 +49,8 @@ public class VenueController {
     }
     //Insert
     @PostMapping
-    public ResponseEntity<?> insertVenue(@RequestBody VenuesRequest venuesRequest){
+    public ResponseEntity<?> insertVenue(@Valid
+            @RequestBody VenuesRequest venuesRequest){
         Venues venues1= venueService.insertVenue(venuesRequest);
         ApiResponse<Venues> venuesApiResponse= new ApiResponse<>(
                 "Successfully insert new venue",
@@ -60,7 +63,7 @@ public class VenueController {
     }
     // Update
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateVenueById(@PathVariable Integer id, @RequestBody VenuesRequest venuesRequest) throws NotFoundException {
+    public ResponseEntity<?> updateVenueById(@PathVariable Integer id, @RequestBody VenuesRequest venuesRequest)  {
         Venues updatedVenue = venueService.updateVenueById(id, venuesRequest);
         ApiResponse<Venues> response = new ApiResponse<>(
                 "Venue updated successfully",
@@ -74,7 +77,7 @@ public class VenueController {
 
     //Delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteVenueById(@PathVariable Integer id) throws NotFoundException {
+    public ResponseEntity<?> deleteVenueById(@PathVariable Integer id)  {
         venueService.deleteVenueById(id);
         return ResponseEntity.ok(new ResponseEntity<>(
                 "Successfully",

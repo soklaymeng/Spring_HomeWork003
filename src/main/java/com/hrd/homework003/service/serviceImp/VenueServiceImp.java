@@ -1,5 +1,6 @@
 package com.hrd.homework003.service.serviceImp;
 
+import com.hrd.homework003.exception.VenueNotFoundException;
 import com.hrd.homework003.model.Venues;
 import com.hrd.homework003.model.dto.request.VenuesRequest;
 import com.hrd.homework003.repository.VenuesRepository;
@@ -26,9 +27,9 @@ public class VenueServiceImp implements VenueService {
     }
         //find by id
     @Override
-    public Venues findVenueById(Integer id) throws NotFoundException {
+    public Venues findVenueById(Integer id)  {
         if (venuesRepository.findVenueById(id)==null){
-            throw new NotFoundException("Venue with id " + id + " not found");
+           throw new VenueNotFoundException("Venue with id " + id + " not exist...");
         }
         return venuesRepository.findVenueById(id);
     }
@@ -39,17 +40,17 @@ public class VenueServiceImp implements VenueService {
     }
 
     @Override
-    public void deleteVenueById(Integer id) throws NotFoundException {
+    public void deleteVenueById(Integer id) {
         if (venuesRepository.findVenueById(id)==null){
-            throw new NotFoundException("Venue with id " + id + " not found");
+          throw new VenueNotFoundException("Venues with id " +id+ "  doesn't exist");
         }
         venuesRepository.deleteVenueById(id);
     }
 
     @Override
-    public Venues updateVenueById(Integer id, VenuesRequest venuesRequest) throws NotFoundException {
+    public Venues updateVenueById(Integer id, VenuesRequest venuesRequest) {
        if (venuesRepository.findVenueById(id)==null){
-           throw new NotFoundException("Venue with id " + id + " not found");
+           throw new VenueNotFoundException("Venue with id " + id + " not found");
        }
         return venuesRepository.updateVenueById(id, venuesRequest);
     }
