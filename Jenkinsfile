@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         COMPOSE_PATH = "docker-compose.yaml"
+        IMAGE = "spring-image"
     }
     stages {
         stage('Deploy') {
