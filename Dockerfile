@@ -3,7 +3,7 @@ FROM maven:3.8.7-eclipse-temurin-19 AS build
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy current local directory to /app which current directory in container
+
 COPY . .
 
 
