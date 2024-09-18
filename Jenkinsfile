@@ -9,7 +9,7 @@ pipeline {
             steps {
                 script {
                     echo "Stopping and removing container"
-                    sh "docker-compose -f ${COMPOSE_PATH} down"
+                    sh "docker compose -f ${COMPOSE_PATH} down"
                 }
             }
         }
@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     echo "Deploy Spring Boot"
-                    sh "docker-compose -f ${COMPOSE_PATH} up -d --build" // Adjusted 'docker compose' to 'docker-compose' for consistency
+                    sh "docker compose -f ${COMPOSE_PATH} up -d --build" // Adjusted 'docker compose' to 'docker-compose' for consistency
                 }
             }
         }
