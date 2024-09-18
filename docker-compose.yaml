@@ -1,7 +1,7 @@
 services:
   spring:
     build:
-      context:
+      context: .
       dockerfile: Dockerfile
     ports:
       - "8181:8181"
