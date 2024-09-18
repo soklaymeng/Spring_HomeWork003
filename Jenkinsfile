@@ -13,13 +13,14 @@ pipeline {
                 }
             }
         }
-        state("Deploy"){
-            steps{
-                script{
+        stage('Deploy') { // Changed 'state' to 'stage'
+            steps {
+                script {
                     echo "Deploy Spring Boot"
-                    sh "docker compose -f ${COMPOSE_PATH} up -d --build"
+                    sh "docker-compose -f ${COMPOSE_PATH} up -d --build" // Adjusted 'docker compose' to 'docker-compose' for consistency
                 }
             }
         }
     }
 }
+
