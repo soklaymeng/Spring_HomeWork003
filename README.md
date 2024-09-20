@@ -1,2 +1,1 @@
-# Spring-ArgoCd
-# Argo-spring
+# spring-argoCD
