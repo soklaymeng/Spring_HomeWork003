@@ -11,7 +11,7 @@ pipeline {
                 echo "Running on node = ${env.NODE_NAME}"
                 echo "Build number is ${env.BUILD_NUMBER}"
                 // This is where you might want to add your checkout scm step
-                // checkout scm
+                
             }
         }
 
