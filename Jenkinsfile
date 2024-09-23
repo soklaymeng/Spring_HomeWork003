@@ -54,8 +54,23 @@ pipeline {
                             credentialsId: 'git-token', 
                             url: 'https://github.com/soklaymeng/Spring_HomeWork003.git'
                         
-                        echo "Updating image tag in values.yaml"
-                        sh "sed -i 's/tag:.*/tag: ${TAG}.${VERSION}/' values.yaml"
+                        // Diagnostic: Print current directory and list files
+                        sh """
+                            echo "Current directory: \$(pwd)"
+                            echo "Listing files:"
+                            ls -la
+                        """
+                        
+                        // Define the path to values.yaml
+                        def valuesFilePath = 'values.yaml' // Update if located elsewhere, e.g., 'k8s/values.yaml'
+                        
+                        // Check if values.yaml exists
+                        if (fileExists(valuesFilePath)) {
+                            echo "Updating image tag in ${valuesFilePath}"
+                            sh "sed -i 's/tag:.*/tag: ${TAG}.${VERSION}/' ${valuesFilePath}"
+                        } else {
+                            error "File ${valuesFilePath} does not exist."
+                        }
                         
                         // Configure Git user
                         sh """
@@ -65,7 +80,7 @@ pipeline {
                         
                         // Commit and push changes
                         sh """
-                            git add values.yaml
+                            git add ${valuesFilePath}
                             git commit -m "Update image tag to ${TAG}.${VERSION}"
                             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/soklaymeng/Spring_HomeWork003.git HEAD:main
                         """
