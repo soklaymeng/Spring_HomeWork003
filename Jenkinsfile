@@ -5,24 +5,23 @@ pipeline {
         DOCKER_IMAGE = "${IMAGE}:${BUILD_NUMBER}"
     }
     stages {
-    
-        stage('checkout') { // Changed 'state' to 'stage'
+        stage('Checkout') {
             steps {
                 echo "Running..."
-                echo "Running on node = $NODE_NAME"
-                echo "Build number is $BUILD_NUMBER"
+                echo "Running on node = ${env.NODE_NAME}"
+                echo "Build number is ${env.BUILD_NUMBER}"
+                // This is where you might want to add your checkout scm step
+                // checkout scm
             }
         }
 
-        stage("build docker image") {
+        stage('Build Docker Image') {
             steps {
-                echo "Build new docker image"
+                echo "Building new Docker image"
                 sh "docker build -t ${DOCKER_IMAGE} ."
                 sh "docker images"
             }
         }
-
-        
     }
 }
 
