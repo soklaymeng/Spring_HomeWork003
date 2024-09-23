@@ -10,7 +10,7 @@ pipeline {
         stage("Build Image") {
             steps {
                 script {
-                    echo "Building Next.js Docker image."
+                    echo "Building springboot Docker image."
                     sh """
                         docker build -f ${DOCKER_FILE} \
                             -t ${IMAGE}:${TAG}.${VERSION} \
@@ -120,3 +120,4 @@ pipeline {
         }
     }
 }
+
