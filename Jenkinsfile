@@ -8,7 +8,9 @@ pipeline {
     
         stage('checkout') { // Changed 'state' to 'stage'
             steps {
-                echo "Running"
+                echo "Running..."
+                echo "Running on node = $NODE_NAME"
+                echo "Build number is $BUILD_NUMBER"
             }
         }
 
