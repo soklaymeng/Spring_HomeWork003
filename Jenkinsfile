@@ -10,7 +10,9 @@ pipeline {
                 echo "Running..."
                 echo "Running on node = ${env.NODE_NAME}"
                 echo "Build number is ${env.BUILD_NUMBER}"
-                checkout scm  // Added the checkout step
+                
+                // Ensure checkout from SCM is defined properly
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/soklaymeng/YourRepo.git']]])
             }
         }
 
@@ -25,7 +27,10 @@ pipeline {
         stage('Push to Registry') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub_credential', usernameVariable: 'REGISTRY_USERNAME', passwordVariable: 'REGISTRY_PASSWORD')]) {
+                    echo "Logging in to DockerHub..."
                     sh "echo ${REGISTRY_PASSWORD} | docker login -u ${REGISTRY_USERNAME} --password-stdin"
+                    
+                    echo "Pushing Docker image to the registry..."
                     sh "docker push ${DOCKER_IMAGE}"
                 }
             }
