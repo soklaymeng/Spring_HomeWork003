@@ -13,7 +13,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') { // Changed 'state' to 'stage'
+        stage('Deploy') { // Changed 'state'
             steps {
                 script {
                     echo "Deploy Spring Boot"
