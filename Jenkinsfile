@@ -5,22 +5,14 @@ pipeline {
         IMAGE = "spring-image"
     }
     stages {
-        stage('Cleanup') {
+    
+        stage('checkout') { // Changed 'state' to 'stage'
             steps {
-                script {
-                    echo "Stopping and removing container"
-                    sh "docker compose -f ${COMPOSE_PATH} down"
-                }
+                echo "Running"
             }
         }
-        stage('Deploy') { // Changed 'state' to 'stage'
-            steps {
-                script {
-                    echo "Deploy Spring Boot"
-                    sh "docker compose -f ${COMPOSE_PATH} up -d --build" // Adjusted 'docker compose' to 'docker-compose' for consistency
-                }
-            }
-        }
+
+        
     }
 }
 
