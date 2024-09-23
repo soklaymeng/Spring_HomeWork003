@@ -1,37 +1,23 @@
 pipeline {
     agent any
     environment {
-        IMAGE = "mengsoklay/deops-backend"
-        DOCKER_IMAGE = "${IMAGE}:${BUILD_NUMBER}"
+        COMPOSE_PATH = "docker-compose.yaml"
+        IMAGE = "spring-image"
     }
     stages {
-        stage('Checkout') {
+        stage('Cleanup') {
             steps {
-                echo "Running..."
-                echo "Running on node = ${env.NODE_NAME}"
-                echo "Build number is ${env.BUILD_NUMBER}"
-                
-                // Ensure checkout from SCM is defined properly
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/soklaymeng/YourRepo.git']]])
+                script {
+                    echo "Stopping and removing container"
+                    sh "docker compose -f ${COMPOSE_PATH} down"
+                }
             }
         }
-
-        stage('Build Docker Image') {
+        stage('Deploy') { // Changed 'state' to 'stage'
             steps {
-                echo "Building new Docker image"
-                sh "docker build -t ${DOCKER_IMAGE} ."
-                sh "docker images"
-            }
-        }
-
-        stage('Push to Registry') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub_credential', usernameVariable: 'REGISTRY_USERNAME', passwordVariable: 'REGISTRY_PASSWORD')]) {
-                    echo "Logging in to DockerHub..."
-                    sh "echo ${REGISTRY_PASSWORD} | docker login -u ${REGISTRY_USERNAME} --password-stdin"
-                    
-                    echo "Pushing Docker image to the registry..."
-                    sh "docker push ${DOCKER_IMAGE}"
+                script {
+                    echo "Deploy Spring Boot"
+                    sh "docker compose -f ${COMPOSE_PATH} up -d --build" // Adjusted 'docker compose' to 'docker-compose' for consistency
                 }
             }
         }
