@@ -57,7 +57,7 @@ pipeline {
                 script {
                     echo "Updating Kubernetes deployment manifest with new image tag."
                     // Update the deployment.yaml file with the new Docker image tag
-                    sh "sed -i 's|image:.*|image: ${IMAGE}:${TAG}.${VERSION}|' manifest/deployment.yaml" // Update path if needed
+                    sh "sed -i 's|image:.*|image: ${IMAGE}:${TAG}.${VERSION}|' argro-spring/manifest/deployment.yaml"
                 }
             }
         }
@@ -67,11 +67,12 @@ pipeline {
                 script {
                     echo "Deploying updated manifests to Kubernetes."
                     withCredentials([file(credentialsId: 'kubeconfig-credential-id', variable: 'KUBECONFIG')]) {
-                        sh "kubectl apply -f manifest/deployment.yaml" // Update path if needed
-                        sh "kubectl apply -f manifest/service.yaml" // Update path if needed
+                        sh "kubectl apply -f argro-spring/manifest/deployment.yaml"
+                        sh "kubectl apply -f argro-spring/manifest/service.yaml"
                     }
                 }
             }
         }
     }
 }
+
