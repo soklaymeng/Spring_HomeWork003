@@ -5,7 +5,7 @@ pipeline {
         IMAGE = "mengsoklay/deops-backend"
         TAG = "0.0.0"
         VERSION = "${env.BUILD_ID}"
-        DOCKER_CREDENTIALS_ID = "dockerhub-token" // Docker Hub credentials ID
+        DOCKER_CREDENTIALS_ID = "dockerhub-token" // Docker Hub credentials
         GIT_REPOSITORY = "https://github.com/soklaymeng/argro-spring.git" // Kubernetes manifest repository
         GIT_BRANCH = "master" // Branch to check out
     }
