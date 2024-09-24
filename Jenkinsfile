@@ -44,7 +44,7 @@ pipeline {
                         
                         sh "git commit -am 'Update image tag to ${TAG}.${VERSION}'"
                         echo "Pushing updates to GitHub"
-                        sh "git push https://${USERNAME}:${PASSWORD}@github.com/soklaymeng/Spring_HomeWork003"
+                        sh "git push https://${USERNAME}:${PASSWORD}@github.com/soklaymeng/argro-spring"
                     }
                 }
             }
