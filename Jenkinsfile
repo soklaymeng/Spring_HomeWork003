@@ -35,9 +35,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'git-token', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        git branch: 'master', credentialsId: 'git-token', url: 'https://github.com/soklaymeng/Spring_HomeWork003.git'
+                        git branch: 'master', credentialsId: 'git-token', url: 'https://github.com/soklaymeng/argro-spring.git'
                         echo "Updating image tag in Kubernetes manifest file"
-                        sh "sed -i 's/:tag:.*/:tag: ${TAG}.${VERSION}/' values.yaml"
                         
                         echo "Git config for pushing the latest update."
                         sh "git config --global user.email 'mengsoklay2222@gmail.com'"
@@ -45,7 +44,7 @@ pipeline {
                         
                         sh "git commit -am 'Update image tag to ${TAG}.${VERSION}'"
                         echo "Pushing updates to GitHub"
-                        sh "git push https://${USERNAME}:${PASSWORD}@github.com/soklaymeng/Spring_HomeWork003.git"
+                        sh "git push https://${USERNAME}:${PASSWORD}@github.com/soklaymeng/Spring_HomeWork003"
                     }
                 }
             }
