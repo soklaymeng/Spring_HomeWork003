@@ -5,16 +5,16 @@ pipeline {
         IMAGE = "mengsoklay/deops-backend"
         TAG = "0.0.0"
         VERSION = "${env.BUILD_ID}"
-        DOCKER_CREDENTIALS_ID = "dockerhub-token"
-        GIT_REPOSITORY = "https://github.com/soklaymeng/argro-spring.git" 
-        GIT_BRANCH = "master"
+        DOCKER_CREDENTIALS_ID = "dockerhub-token" // Docker Hub credentials ID
+        GIT_REPOSITORY = "https://github.com/soklaymeng/argro-spring.git" // Kubernetes manifest repository
+        GIT_BRANCH = "master" // Branch to check out
     }
     stages {
         stage("Clone Spring Boot Project") {
             steps {
                 script {
                     echo "Cloning Spring Boot project repository."
-                    git url: 'https://github.com/soklaymeng/Spring_HomeWork003.git', branch: GIT_BRANCH
+                    git url: 'https://github.com/soklaymeng/Spring_HomeWork003.git', branch: "${GIT_BRANCH}"
                 }
             }
         }
@@ -28,15 +28,15 @@ pipeline {
             }
         }
 
-        stage("Push image to registry (Docker Hub)") {
+        stage("Push Image to Registry (Docker Hub)") {
             when {
                 expression { currentBuild.currentResult == 'SUCCESS' } // Only proceed if the build was successful
             }
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: dockerhub_token, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        echo "Login to Docker Hub"
-                        sh "docker login -u $USERNAME -p $PASSWORD"
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        echo "Logging into Docker Hub."
+                        sh "docker login -u \$USERNAME -p \$PASSWORD"
                         sh "docker push ${IMAGE}:${TAG}.${VERSION}"
                     }
                 }
@@ -47,7 +47,7 @@ pipeline {
             steps {
                 script {
                     echo "Cloning Kubernetes manifest repository."
-                    git url: GIT_REPOSITORY, branch: GIT_BRANCH
+                    git url: "${GIT_REPOSITORY}", branch: "${GIT_BRANCH}"
                 }
             }
         }
@@ -75,4 +75,3 @@ pipeline {
         }
     }
 }
-
