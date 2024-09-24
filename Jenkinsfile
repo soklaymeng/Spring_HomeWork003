@@ -5,6 +5,7 @@ pipeline {
         IMAGE = "mengsoklay/deops-backend"
         TAG = "0.0.0"
         VERSION = "${env.BUILD_ID}"
+        KUBECONFIG = '/path/to/your/kubeconfig'  // Path to the Kubeconfig file on Jenkins server
     }
     stages {
         stage("Build Image") {
@@ -31,20 +32,24 @@ pipeline {
             }
         }
 
-        stage("Update image in Kubernetes manifest file to latest images") {
+        stage("Update Kubernetes Manifest") {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'git-token', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        git branch: 'master', credentialsId: 'git-token', url: 'https://github.com/soklaymeng/Spring_HomeWork003.git'
-                        echo "Updating image tag in Kubernetes manifest file"
-                        
-                        echo "Git config for pushing the latest update."
-                        sh "git config --global user.email 'mengsoklay2222@gmail.com'"
-                        sh "git config --global user.name 'soklaymeng'"
-                        
-                        sh "git commit -am 'Update image tag to ${TAG}.${VERSION}'"
-                        echo "Pushing updates to GitHub"
-                        sh "git push https://${USERNAME}:${PASSWORD}@github.com/soklaymeng/Spring_HomeWork003.git"
+                    echo "Updating Kubernetes deployment manifest with new image tag."
+                    // Update the deployment.yaml file with the new Docker image tag
+                    sh "sed -i 's|image:.*|image: ${IMAGE}:${TAG}.${VERSION}|' kubernetes/deployment.yaml"
+                }
+            }
+        }
+
+        stage("Deploy to Kubernetes") {
+            steps {
+                script {
+                    echo "Deploying updated manifests to Kubernetes."
+                    // Apply the updated deployment.yaml and service.yaml to the Kubernetes cluster
+                    withCredentials([file(credentialsId: 'kubeconfig-credential-id', variable: 'KUBECONFIG')]) {
+                        sh "kubectl apply -f kubernetes/deployment.yaml"
+                        sh "kubectl apply -f kubernetes/service.yaml"
                     }
                 }
             }
