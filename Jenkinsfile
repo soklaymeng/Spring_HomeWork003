@@ -38,7 +38,6 @@ pipeline {
                         git branch: 'master', credentialsId: 'git-token', url: 'https://github.com/soklaymeng/Spring_HomeWork003.git'
                         echo "Updating image tag in Kubernetes manifest file"
                         
-                        
                         echo "Git config for pushing the latest update."
                         sh "git config --global user.email 'mengsoklay2222@gmail.com'"
                         sh "git config --global user.name 'soklaymeng'"
