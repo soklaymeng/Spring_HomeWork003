@@ -3,7 +3,7 @@ pipeline {
         label 'agentc'
     }
     tools {
-        maven 'maven'
+        maven 'Maven' // Use the exact name configured in Jenkins Global Tool Configuration
     }
     environment {
         IMAGE = "mengsoklay/deops-backend"
@@ -18,7 +18,6 @@ pipeline {
     }
 
     stages {
-
         stage("checkout") {
             steps {
                 echo "🚀🚀🚀🚀 Running..."
@@ -107,5 +106,6 @@ pipeline {
         }
     }
 }
+
 
 
