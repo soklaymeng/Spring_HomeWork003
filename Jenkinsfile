@@ -1,54 +1,111 @@
 pipeline {
-    agent any
-    environment {
-        DOCKER_FILE = "Dockerfile"
-        IMAGE = "mengsoklay/deops-backend"
-        TAG = "0.0.0"
-        VERSION = "${env.BUILD_ID}"
+    agent {
+        label 'agentc'
     }
+    tools {
+        maven 'maven'
+    }
+    environment {
+        IMAGE = "mengsoklay/deops-backend"
+        DOCKER_IMAGE = "${IMAGE}:${BUILD_NUMBER}"
+        DOCKER_CREDENTIALS_ID = 'dockerhub-token'
+
+        GIT_MANIFEST_REPO = "https://github.com/soklaymeng/Spring_HomeWork003.git"
+        GIT_BRANCH = "master"
+        MANIFEST_REPO = "manifest-repo"
+        MANIFEST_FILE_PATH = "manifests/deployment.yaml"
+        GIT_CREDENTIALS_ID = 'https_access_token'
+    }
+
     stages {
-        stage("Build Image") {
+
+        stage("checkout") {
             steps {
-                script {
-                    echo "Building Spring Boot Docker image."
-                    sh "docker build -t ${IMAGE}:${TAG}.${VERSION} ."
-                }
+                echo "🚀🚀🚀🚀 Running..."
+                echo "Running on $NODE_NAME"
+                echo "$BUILD_NUMBER"
+                sh 'docker image prune --all'
+                sh 'pwd'
+                sh 'ls'
             }
         }
 
-        stage("Push image to registry (Docker Hub)") {
-            when {
-                expression { currentBuild.currentResult == 'SUCCESS' } // Only proceed if the build was successful
+        stage("clean package") {
+            steps {
+                echo "🚀 Building the application..."
+                sh 'mvn clean install'
             }
+        }
+
+        stage("build and push docker image") {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-token', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        echo "Login to Docker Hub"
-                        sh "docker login -u $USERNAME -p $PASSWORD"
-                        sh "docker push ${IMAGE}:${TAG}.${VERSION}"
+                    echo "🚀 Building docker image..."
+                    sh 'docker build -t ${DOCKER_IMAGE} .'
+                    sh 'docker images | grep -i ${IMAGE}'
+                    
+                    echo "🚀 Log in to Docker Hub using Jenkins credentials..."
+                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                        sh 'echo "${DOCKER_PASS} ${DOCKER_USER}"'
+                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                     }
+                    echo "🚀 Pushing the image to Docker Hub"
+                    sh 'docker push ${DOCKER_IMAGE}'
                 }
             }
         }
 
-        stage("Update image in Kubernetes manifest file to latest images") {
+        stage("Cloning the manifest file") {
+            steps {
+                sh "pwd"
+                sh "ls -l"
+                echo "🚀 Checking if the manifest repository exists and removing it if necessary..."
+                sh '''
+                    if [ -d "${MANIFEST_REPO}" ]; then
+                        echo "🚀 ${MANIFEST_REPO} exists, removing it..."
+                        rm -rf ${MANIFEST_REPO}
+                    fi
+                '''
+                echo "🚀 Cloning the manifest repository..."
+                sh "git clone -b ${GIT_BRANCH} ${GIT_MANIFEST_REPO} ${MANIFEST_REPO}"
+                sh "ls -l"
+            }
+        }
+
+        stage("Updating the manifest file") {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'git-token', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        git branch: 'master', credentialsId: 'git-token', url: 'https://github.com/soklaymeng/argro-spring.git'
-                        echo "Updating image tag in Kubernetes manifest file"
-                        
-                        echo "Git config for pushing the latest update."
-                        sh "git config --global user.email 'mengsoklay2222@gmail.com'"
-                        sh "git config --global user.name 'soklaymeng'"
-                        
-                        sh "git commit -am 'Update image tag to ${TAG}.${VERSION}'"
-                        echo "Pushing updates to GitHub"
-                        sh "git push https://${USERNAME}:${PASSWORD}@github.com/soklaymeng/argro-spring"
+                    echo "🚀 Updating the image in the deployment manifest..."
+                    sh """
+                    sed -i 's|image: ${IMAGE}:.*|image: ${DOCKER_IMAGE}|' ${MANIFEST_REPO}/${MANIFEST_FILE_PATH}
+                    """
+                }
+            }
+        }
+
+        stage("push changes to the manifest") {
+            steps {
+                script {
+                    dir("${MANIFEST_REPO}") {
+                        withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, passwordVariable: 'GIT_PASS', usernameVariable: 'GIT_USER')]) {
+                            sh """
+                            git config --global user.name "soklaymeng"
+                            git config --global user.email "mengsoklay2222@gmail.com"
+                            echo "🚀 Checking..."
+                            git branch
+                            ls -l 
+                            pwd 
+                            echo "🚀 Start pushing to manifest repo"
+                            git add ${MANIFEST_FILE_PATH}
+                            git commit -m "Update image to ${DOCKER_IMAGE}"
+                            git push https://${GIT_USER}:${GIT_PASS}@github.com/soklaymeng/Spring_HomeWork003.git
+                            """
+                        }
                     }
                 }
             }
         }
     }
 }
+
 
