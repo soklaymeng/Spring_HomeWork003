@@ -1,90 +1,78 @@
 pipeline {
     agent any
     environment {
-        IMAGE = "mengsoklay/deops-backend"           // Docker image name
-        VERSION = "${env.BUILD_ID}"                   // Version from Jenkins build ID
-        DOCKER_CREDENTIALS_ID = 'dockerhub-token'     // Docker Hub credentials in Jenkins
-        GIT_CREDENTIALS_ID = 'git-token'              // GitHub credentials for manifest repo
-        GIT_REPO_URL = 'https://github.com/soklaymeng/argro-spring.git'  // Kubernetes manifest repo
-        GIT_BRANCH = 'master'                         // GitHub branch
-        DEPLOYMENT_FILE = 'manifest/deployment.yaml'   // Path to deployment.yaml file in the manifest repo
-        SERVICE_FILE = 'manifest/service.yaml'         // Path to service.yaml file in the manifest repo
+        DOCKER_FILE = "Dockerfile"
+        IMAGE = "mengsoklay/deops-backend"
+        TAG = "0.0.0"
+        VERSION = "${env.BUILD_ID}"
+        DOCKER_CREDENTIALS_ID = "dockerhub-token"
+        GIT_REPOSITORY = "https://github.com/soklaymeng/argro-spring.git" 
+        GIT_BRANCH = "master"
     }
-
     stages {
-        stage('Build Docker Image') {
+        stage("Clone Spring Boot Project") {
             steps {
                 script {
-                    echo "Building Docker image..."
-                    sh "docker build -t ${IMAGE}:${VERSION} ."
+                    echo "Cloning Spring Boot project repository."
+                    git url: 'https://github.com/soklaymeng/Spring_HomeWork003.git', branch: GIT_BRANCH
                 }
             }
         }
 
-        stage('Push Docker Image to Docker Hub') {
+        stage("Build Image") {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
-                        sh "docker push ${IMAGE}:${VERSION}"
+                    echo "Building Spring Boot Docker image."
+                    sh "docker build -t ${IMAGE}:${TAG}.${VERSION} -f ${DOCKER_FILE} ."
+                }
+            }
+        }
+
+        stage("Push image to registry (Docker Hub)") {
+            when {
+                expression { currentBuild.currentResult == 'SUCCESS' } // Only proceed if the build was successful
+            }
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: dockerhub_token, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        echo "Login to Docker Hub"
+                        sh "docker login -u $USERNAME -p $PASSWORD"
+                        sh "docker push ${IMAGE}:${TAG}.${VERSION}"
                     }
                 }
             }
         }
 
-        stage('Clone Manifest Repository') {
+        stage("Clone Manifest Repository") {
             steps {
                 script {
-                    echo "Cloning manifest repository..."
-                    sh '''
-                        if [ -d "argro-spring" ]; then
-                            rm -rf argro-spring
-                        fi
-                    '''
-                    git branch: GIT_BRANCH, credentialsId: GIT_CREDENTIALS_ID, url: GIT_REPO_URL
+                    echo "Cloning Kubernetes manifest repository."
+                    git url: GIT_REPOSITORY, branch: GIT_BRANCH
                 }
             }
         }
 
-        stage('Update Kubernetes Manifest') {
+        stage("Update Kubernetes Manifest") {
             steps {
                 script {
-                    echo "Updating image in deployment manifest..."
-                    sh """
-                    sed -i 's|image: .*|image: ${IMAGE}:${VERSION}|' argro-spring/${DEPLOYMENT_FILE}
-                    """
+                    echo "Updating Kubernetes deployment manifest with new image tag."
+                    // Update the deployment.yaml file with the new Docker image tag
+                    sh "sed -i 's|image:.*|image: ${IMAGE}:${TAG}.${VERSION}|' manifest/deployment.yaml"
                 }
             }
         }
 
-        stage('Commit and Push Manifest Changes') {
+        stage("Deploy to Kubernetes") {
             steps {
                 script {
-                    dir('argro-spring') {
-                        withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                            sh '''
-                                git config --global user.email "mengsoklay2222@gmail.com"
-                                git config --global user.name "soklaymeng"
-                                git add ${DEPLOYMENT_FILE}
-                                git commit -m "Update image to ${IMAGE}:${VERSION}"
-                                git push https://${GIT_USER}:${GIT_PASS}@github.com/soklaymeng/argro-spring.git
-                            '''
-                        }
+                    echo "Deploying updated manifests to Kubernetes."
+                    withCredentials([file(credentialsId: 'kubeconfig-credential-id', variable: 'KUBECONFIG')]) {
+                        sh "kubectl apply -f manifest/deployment.yaml"
+                        sh "kubectl apply -f manifest/service.yaml"
                     }
-                }
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    echo "Deploying to Kubernetes..."
-                    sh '''
-                        kubectl apply -f argro-spring/${DEPLOYMENT_FILE}
-                        kubectl apply -f argro-spring/${SERVICE_FILE}
-                    '''
                 }
             }
         }
     }
 }
+
