@@ -1,74 +1,57 @@
 pipeline {
     agent any
     environment {
-        DOCKER_FILE = "Dockerfile"
-        IMAGE = "mengsoklay/deops-backend"
-        TAG = "0.0.0"
-        VERSION = "${env.BUILD_ID}"
-        GIT_MANIFEST_REPO = "https://github.com/soklaymeng/argro-spring.git"
-        MANIFEST_FILE_PATH = "deployment.yaml"
-        GIT_CREDENTIALS_ID = 'git-token' // GitHub credentials
-        DOCKER_CREDENTIALS_ID = 'dockerhub-token' // Docker Hub credentials
+        DOCKER_IMAGE = "mengsoklay/deops-backend:${env.BUILD_ID}"
+        DOCKER_CREDENTIALS_ID = 'dockerhub-token'
+        GIT_CREDENTIALS_ID = 'git-token'
+        MANIFEST_REPO = "https://github.com/soklaymeng/argro-spring.git"
+        MANIFEST_FILE_PATH = "path/to/your/manifest/file.yaml"
+        GIT_BRANCH = "main"  // Adjust if needed
     }
+    
     stages {
-        stage("Build Image") {
+        stage("Checkout Code") {
             steps {
-                script {
-                    echo "Building Spring Boot Docker image."
-                    sh "docker build -t ${IMAGE}:${TAG}.${VERSION} ."
-                }
+                git branch: 'master', url: 'https://github.com/soklaymeng/Spring_HomeWork003.git'
             }
         }
 
-        stage("Push image to registry (Docker Hub)") {
-            when {
-                expression { currentBuild.currentResult == 'SUCCESS' }
-            }
+        stage("Build and Push Docker Image") {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        echo "Login to Docker Hub"
-                        sh "docker login -u $USERNAME -p $PASSWORD"
-                        sh "docker push ${IMAGE}:${TAG}.${VERSION}"
+                    echo "Building Spring Boot Docker image"
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+
+                    echo "Pushing Docker image to Docker Hub"
+                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                        sh "docker push ${DOCKER_IMAGE}"
                     }
                 }
             }
         }
 
-        stage("Clone Manifest Repository") {
+        stage("Update Kubernetes Manifest") {
             steps {
                 script {
                     echo "Cloning manifest repository"
                     withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, passwordVariable: 'GIT_PASS', usernameVariable: 'GIT_USER')]) {
-                        sh "git clone https://${GIT_USER}:${GIT_PASS}@github.com/soklaymeng/argro-spring.git"
-                    }
-                }
-            }
-        }
+                        sh """
+                            git clone ${MANIFEST_REPO} manifest-repo
+                            cd manifest-repo
+                            git checkout ${GIT_BRANCH}
+                        """
 
-        stage("Update Manifest File") {
-            steps {
-                script {
-                    echo "Updating image tag in the manifest file"
-                    sh """
-                        sed -i 's|image: .*$|image: ${IMAGE}:${TAG}.${VERSION}|' argro-spring/${MANIFEST_FILE_PATH}
-                    """
-                }
-            }
-        }
-
-        stage("Push Updated Manifest") {
-            steps {
-                script {
-                    echo "Pushing updated manifest back to repository"
-                    dir('argro-spring') {
-                        withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, passwordVariable: 'GIT_PASS', usernameVariable: 'GIT_USER')]) {
-                            sh """
-                                git add ${MANIFEST_FILE_PATH}
-                                git commit -m 'Updated image to ${IMAGE}:${TAG}.${VERSION}'
-                                git push https://${GIT_USER}:${GIT_PASS}@github.com/soklaymeng/argro-spring.git
-                            """
-                        }
+                        echo "Updating manifest file with new Docker image"
+                        sh """
+                            sed -i 's|image:.*|image: ${DOCKER_IMAGE}|' manifest-repo/${MANIFEST_FILE_PATH}
+                            cd manifest-repo
+                            git config user.email "mengsoklay2222@gmail.com"
+                            git config user.name "soklaymeng"
+                            git add ${MANIFEST_FILE_PATH}
+                            git commit -m 'Update image to ${DOCKER_IMAGE}'
+                            git push https://${GIT_USER}:${GIT_PASS}@github.com/soklaymeng/argro-spring.git ${GIT_BRANCH}
+                        """
                     }
                 }
             }
