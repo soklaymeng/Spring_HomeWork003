@@ -15,6 +15,7 @@ pipeline {
             steps {
                 // sh " mvn clean install"
                 // sh " docker image prune -a "
+                echo "hello"
             }
         }
 
