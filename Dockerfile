@@ -9,7 +9,7 @@ WORKDIR /app
 # Copy current local directory to /app which current directory in container
 COPY . .
 
-# Clean the existing build and package 
+
 RUN mvn clean package
 
 # RUN STAGE
