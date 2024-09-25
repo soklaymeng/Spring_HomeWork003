@@ -1,25 +1,24 @@
 pipeline {
     agent any
     environment {
-        COMPOSE_PATH = "docker-compose.yaml"
-        IMAGE = "spring-image"
+        IMAGE = "mengsoklay/deops-backend"
+        DOCKER_IMAGE = "${IMAGE}:${BUILD_NUMBER}"
+        DOCKER_HUB_CREDENTIAL = "dockerhub_token"
     }
     stages {
-        stage('Cleanup') {
+
+        // stage("cleanup") {
+        //     steps {
+        //         sh " mvn clean install"
+        //     }
+        // }
+
+        stage ("build") {
             steps {
-                script {
-                    echo "Stopping and removing container"
-                    sh "docker compose -f ${COMPOSE_PATH} down"
-                }
+                sh " docker build -t ${DOCKER_IMAGE} ."
+                sh " docker ps | grep -t ${IMAGE} "
             }
         }
-        stage('Deploy') { // Changed 'state' to 'stage'
-            steps {
-                script {
-                    echo "Deploy Spring Boot"
-                    sh "docker compose -f ${COMPOSE_PATH} up -d --build" // Adjusted 'docker compose' to 'docker-compose' for consistency
-                }
-            }
-        }
+        
     }
 }
