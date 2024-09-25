@@ -21,6 +21,17 @@ pipeline {
                 sh " docker images | grep -i ${IMAGE} "
             }
         }
+
+        stage ("push image to docker hub") {
+            steps {
+                withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIAL, passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                      sh 'echo "${DOCKER_PASS} ${DOCKER_USER}" '
+                      sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    }
+                    echo "🚀 Pushing the image to Docker hub"
+                    sh 'docker push ${DOCKER_IMAGE}'
+            }
+        }
         
     }
 }
