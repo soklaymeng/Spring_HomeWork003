@@ -72,7 +72,7 @@ pipeline {
             steps {
                 script {
                     dir("${MANIFEST_REPO}") {
-                        withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, passwordVariable: 'GIT_PASS', usernameVariable: 'GIT_USER')]) {
+                        withCredentials([usernamePassword(credentialsId: ${GIT_CREDENTIALS_ID}, passwordVariable: 'GIT_PASS', usernameVariable: 'GIT_USER')]) {
                             sh """
                             git config --global user.name "soklaymeng"
                             git config --global user.email "mengsoklay2222@gmail.com"
