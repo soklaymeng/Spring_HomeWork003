@@ -3,7 +3,7 @@ pipeline {
     environment {
         IMAGE = "mengsoklay/deops-backend"
         DOCKER_IMAGE = "${IMAGE}:${BUILD_NUMBER}"
-        DOCKER_HUB_CREDENTIAL = "dockerhub_token"
+        DOCKER_HUB_CREDENTIAL = "dockerhub-token"
     }
     stages {
 
