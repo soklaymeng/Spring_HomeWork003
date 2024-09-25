@@ -35,7 +35,14 @@ pipeline {
                
             }
         }
-        
+
+        stage ("clone manifest file") {
+             steps {
+                    sh "pwd"
+                    sh "ls -l"
+                 
+             }
+        }
         
     }
 }
