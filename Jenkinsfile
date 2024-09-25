@@ -54,5 +54,18 @@ pipeline {
              }
         }
         
+        stage("Updating the manifest file") {
+            steps {
+                script {
+                    echo "🚀 Update the image in the deployment manifest..."
+                    sh """
+                    sed -i 's|image: ${IMAGE}:.*|image: ${DOCKER_IMAGE}|' ${MANIFEST_REPO}/mainifest/deployment.yaml
+                    """
+                }
+            }
+        }
+
+        
+        
     }
 }
