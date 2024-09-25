@@ -14,7 +14,7 @@ pipeline {
         stage("cleanup") {
             steps {
                 // sh " mvn clean install"
-                sh " docker image prune -a "
+                // sh " docker image prune -a "
             }
         }
 
@@ -61,7 +61,7 @@ pipeline {
                 script {
                     echo "🚀 Update the image in the deployment manifest..."
                     sh """
-                    sed -i 's|image: ${IMAGE}:.*|image: ${DOCKER_IMAGE}|' ${MANIFEST_REPO}/mainifest/deployment.yaml
+                    sed -i 's|image: ${IMAGE}:.*|image: ${DOCKER_IMAGE}|' ${MANIFEST_REPO}/${MANIFEST_FILE_PATH}
                     """
                 }
             }
@@ -82,7 +82,7 @@ pipeline {
                             echo "🚀 Start pushing to manifest repo"
                             git add ${MANIFEST_FILE_PATH}
                             git commit -m "Update image to ${DOCKER_IMAGE}"
-                            git push https://${GIT_USER}:${GIT_PASS}@github.com/soklaymeng/argro-spring
+                            git push https://${GIT_USER}:${GIT_PASS}@github.com:soklaymeng/argro-spring.git
                             """
                         }
                     }
