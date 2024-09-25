@@ -6,6 +6,7 @@ pipeline {
         DOCKER_HUB_CREDENTIAL = "dockerhub-token"
         MANIFEST_REPO = "manifest-repo"
         GIT_MANIFEST_REPO = "https://github.com/soklaymeng/argro-spring.git"
+        GIT_CREDENTIALS_ID = "git-token"
     }
     stages {
 
@@ -61,6 +62,29 @@ pipeline {
                     sh """
                     sed -i 's|image: ${IMAGE}:.*|image: ${DOCKER_IMAGE}|' ${MANIFEST_REPO}/mainifest/deployment.yaml
                     """
+                }
+            }
+        }
+
+         stage("push changes to the manifest") {
+            steps {
+                script {
+                    dir("${MANIFEST_REPO}") {
+                        withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, passwordVariable: 'GIT_PASS', usernameVariable: 'GIT_USER')]) {
+                            sh """
+                            git config --global user.name "soklaymeng"
+                            git config --global user.email "mengsoklay2222@gmail.com"
+                            echo "🚀 Checking..."
+                            git branch
+                            ls -l 
+                            pwd 
+                            echo "🚀 Start pushing to manifest repo"
+                            git add ${MANIFEST_FILE_PATH}
+                            git commit -m "Update image to ${DOCKER_IMAGE}"
+                            git push https://${GIT_USER}:${GIT_PASS}@github.com/soklaymeng/argro-spring
+                            """
+                        }
+                    }
                 }
             }
         }
