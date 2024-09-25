@@ -83,7 +83,7 @@ pipeline {
                             echo "🚀 Start pushing to manifest repo"
                             git add ${MANIFEST_FILE_PATH}
                             git commit -m "update images to ${DOCKER_IMAGE}"
-                            git push https://${GIT_USER}:${GIT_PASS}@github.com:soklaymeng/argro-spring.git
+                            git push https://${GIT_USER}:${GIT_PASS}@github.com/soklaymeng/argro-spring.git
                             """
                         }
                     }
