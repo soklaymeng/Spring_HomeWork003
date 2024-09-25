@@ -7,7 +7,7 @@ pipeline {
         MANIFEST_REPO = "manifest-repo"
         GIT_MANIFEST_REPO = "https://github.com/soklaymeng/argro-spring.git"
         GIT_CREDENTIALS_ID = "git-token"
-        MANIFEST_FILE_PATH = "manifest/deployment.yaml"
+        MANIFEST_FILE_PATH = "mainifest/deployment.yaml"
     }
     stages {
 
