@@ -7,11 +7,12 @@ pipeline {
     }
     stages {
 
-        // stage("cleanup") {
-        //     steps {
-        //         sh " mvn clean install"
-        //     }
-        // }
+        stage("cleanup") {
+            steps {
+                // sh " mvn clean install"
+                sh " docker image prune -a -y "
+            }
+        }
 
         stage ("build") {
             steps {
